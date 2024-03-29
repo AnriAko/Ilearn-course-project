@@ -25,9 +25,9 @@ class AdminController {
 
 	async getOneUser(req, res, next) {
 		try {
-			const { usersID } = req.params;
-			console.log(usersID);
-			const user = await getUserByID(usersID);
+			const { userID } = req.params;
+			console.log(userID);
+			const user = await getUserByID(userID);
 			res.status(200).json(user);
 		} catch (e) {
 			next(ApiError.internal(e.message));

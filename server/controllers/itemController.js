@@ -78,17 +78,6 @@ class ItemController {
 		try {
 			const { itemID } = req.params;
 			const item = await getItemByID(itemID);
-			const collection = await getCollectionByID(item.CollectionID);
-			const user = await validateAndDecodeToken(req, next);
-			const isVerified = await verifyPermission(user, collection, next)
-			if (item.Hidden) {
-				if (isVerified) {
-					res.status(200).json(item);
-				}
-				else {
-					next(ApiError.notFound('Item not found'))
-				}
-			}
 			res.status(200).json(item);
 		} catch (e) {
 			next(ApiError.internal(e.message));
@@ -98,17 +87,6 @@ class ItemController {
 	async getAllItemsInCollection(req, res, next) {
 		try {
 			const { collectionID } = req.params;
-			const collection = await getCollectionByID(collectionID);
-			const user = await validateAndDecodeToken(req, next);
-			const isVerified = await verifyPermission(user, collection, next);
-			if (isVerified) {
-				const items = await Item.findAll({
-					where: {
-						CollectionID: collectionID,
-					}
-				});
-				res.status(200).json(items);
-			}
 			const items = await Item.findAll({
 				where: {
 					CollectionID: collectionID,

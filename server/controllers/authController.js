@@ -3,7 +3,7 @@ const ApiError = require('../error/ApiError');
 const bcrypt = require('bcrypt');
 const { User, Role } = require('../models/models');
 const { generateToken } = require('../utils/tokenUtils');
-
+const { getUserByID } = require('./adminController');
 class AuthController {
 	registrationValidationRules() {
 		return [
@@ -13,7 +13,16 @@ class AuthController {
 			body('passwordConfirm').trim().not().isEmpty()
 		];
 	}
-
+	async getOneUser(req, res, next) {
+		try {
+			const { userID } = req.params;
+			console.log(userID);
+			const user = await getUserByID(userID);
+			res.status(200).json(user);
+		} catch (e) {
+			next(ApiError.internal(e.message));
+		}
+	}
 	async registration(req, res, next) {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {

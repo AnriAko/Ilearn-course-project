@@ -7,8 +7,12 @@ const { getUserByID } = require('./adminController');
 
 
 async function getCollectionByID(collectionID) {
-	const collection = await Collection.findByPk(collectionID);
-	if (!collection) {
+	const collection = await Collection.findByPk(collectionID, {
+		include: [{
+			model: User,
+			attributes: ['Username']
+		}]
+	}); if (!collection) {
 		throw ApiError.notFound('Collection not found');
 	}
 	return collection;
@@ -29,8 +33,13 @@ class CollectionController {
 	async getOneCollection(req, res, next) {
 		try {
 			const { collectionID } = req.params;
-			const collection = await getCollectionByID(collectionID);
-			res.status(200).json(collection);
+			const collection = await getCollectionByID(collectionID, { include: ['User'] });
+			console.log(collection);
+			if (!collection) {
+				return next(ApiError.notFound(`Collection with ID ${collectionID} not found`));
+			}
+
+			res.status(200).json({ collection });
 		} catch (e) {
 			next(ApiError.internal(e.message));
 		}
@@ -161,11 +170,11 @@ class CollectionController {
 						attributes: [],
 					},
 					{
-						model: User, 
-						attributes: ['Username'], 
+						model: User,
+						attributes: ['Username'],
 					}
 				],
-				group: ['Collection.CollectionID', 'User.UserID'], 
+				group: ['Collection.CollectionID', 'User.UserID'],
 				order: [
 					[sequelize.literal('COUNT("Items"."ItemID")'), 'DESC']
 				],

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://collectionproject.com';
+const API_BASE_URL = 'https://ilearn-course-project-server-production.up.railway.app/api';
 
 const ROUTES = {
 	auth: {

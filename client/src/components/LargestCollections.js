@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom'; // Импортируем Link из react-router-dom
 import CONFIG from '../config';
 
 const LargestCollectionList = ({ amount }) => {
 	const [isLoading, setIsLoading] = useState(true);
-
 	const [collections, setCollections] = useState(null);
+
 	useEffect(() => {
 		axios.get(`${CONFIG.apiBaseUrl}${CONFIG.routes.collections.biggest}`)
 			.then((response) => {
@@ -21,6 +22,7 @@ const LargestCollectionList = ({ amount }) => {
 	if (amount === 0 || !collections) {
 		return <p>No collections to display.</p>;
 	}
+
 	let largestCollections = isLoading ? [] : collections.slice(0, amount || collections.length);
 
 	return (
@@ -41,10 +43,14 @@ const LargestCollectionList = ({ amount }) => {
 						{largestCollections.map((collection) => (
 							<tr key={collection.CollectionID}>
 								<td>{collection.CollectionID}</td>
-								<td>{collection.Title}</td>
+								<td>
+									<Link to={`/collections/${collection.CollectionID}`}>
+										{collection.Title}
+									</Link>
+								</td>
 								<td>{collection.Theme}</td>
 								<td>{collection.ItemAmount}</td>
-								<td>{collection['User.Username']}</td>
+								<td><Link to={`/users/${collection.AuthorID}`}> {collection['User.Username']}</Link></td>
 							</tr>
 						))}
 					</tbody>
